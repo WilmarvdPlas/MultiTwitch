@@ -144,7 +144,7 @@ window.onload = () => {
     function setDisabledProperties() {
         addStreamerButton.disabled = addStreamerInput.value == '' || streams.length >= 9 || removing;
         removeStreamerButton.disabled = streams.length <= 0;
-        removeAllButton.disabled = streams.length <= 0;
+        removeAllButton.disabled = streams.length <= 0 || removing;
     }
 
 }
