@@ -98,6 +98,14 @@ window.onload = () => {
             overlay.className = 'overlay';
             overlay.onclick = () => removeStreamer(stream.id);
 
+            overlay.addEventListener('mouseover', () => {
+                overlay.firstChild.innerText = 'delete_forever';
+            })
+
+            overlay.addEventListener('mouseleave', () => {
+                overlay.firstChild.innerText = 'delete_outline';
+            })
+
             let icon = document.createElement('i');
             icon.className = 'material-icons text-shadow';
             icon.style.fontSize = (cssClasses.findIndex(cssClass => cssClass.name == streamsElement.className) + 1) * 3 + 'vw';
