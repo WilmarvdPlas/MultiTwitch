@@ -22,8 +22,8 @@ body {
 #streams {
     margin: 0 auto;
     display: grid;
-    column-gap: 1vh;
-    row-gap: 1vh;
+    column-gap: 0.5vw;
+    row-gap: 0.5vw;
 }
 
 input, button {
@@ -100,7 +100,7 @@ input, button {
 }
 
 .oneByTwo {
-    width: 100%;
+    width: 99vw;
     grid-template-columns: 1fr 1fr;
 }
 
@@ -110,7 +110,7 @@ input, button {
 }
 
 .threeByTwo {
-    width: 100%;
+    width: 99vw;
     grid-template-columns: 1fr 1fr 1fr;
 }
 
