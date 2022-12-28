@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="/master.css">
+    <link rel="icon" href="twitch_logo.ico">
+    <script src="main.js"></script>
+    <script src="https://player.twitch.tv/js/embed/v1.js"></script>
+    <title>MultiTwitch</title>
+</head>
+<body>
+    <div id="options">
+        <div id="leftButtonGroup" class="buttonGroup">
+            <input id="addStreamerInput" placeholder="Streamer Name">
+            <button id="addStreamerButton" disabled="true" class="greenButton"><i class="material-icons">add</i>Add Streamer</button>
+            <button id="removeStreamerButton" disabled="true" class="redButton"><i class="material-icons">delete_outline</i>Remove Streamer</button>
+            <button id="removeAllButton" disabled="true" class="redButton"><i class="material-icons">delete_sweep</i>Remove All</button>
+        </div>
+        <div id="rightButtonGroup" class="buttonGroup">
+            <div class="buttonGroup">
+                <button id="pauseAllButton"><i class="material-icons">pause</i>Pause All</button>
+                <button id="resumeAllButton"><i class="material-icons">play_arrow</i>Resume All</button>
+            </div>
+        </div>
+    </div>
+    <div id="streamsContainer">
+        <div id="streams">
+        </div>
+    </div>
+</body>
+</html>
