@@ -13,13 +13,13 @@ body {
     overflow: hidden;
 }
 
-#streamsContainer {
+#channelsContainer {
     height: 95%;
     display: grid;
     align-items: center;
 }
 
-#streams {
+#channels {
     margin: 0 auto;
     display: grid;
     column-gap: 0.5vw;
@@ -77,13 +77,13 @@ input, button {
     height: 70%;
 }
 
-.stream {
+.channel {
     position: relative;
     height: fit-content;
     aspect-ratio: 16/9;
 }
 
-.stream iframe { 
+.channel iframe { 
     position: absolute;
     width: 100%;
     height: 100%;

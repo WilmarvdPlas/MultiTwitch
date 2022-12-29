@@ -1,14 +1,14 @@
 window.onload = () => {
 
-    const addStreamerButton = document.getElementById('addStreamerButton');
-    const removeStreamerButton = document.getElementById('removeStreamerButton');
+    const addChannelButton = document.getElementById('addChannelButton');
+    const removeChannelButton = document.getElementById('removeChannelButton');
     const removeAllButton = document.getElementById('removeAllButton');
-    const addStreamerInput = document.getElementById('addStreamerInput');
+    const addChannelInput = document.getElementById('addChannelInput');
 
     const pauseAllButton = document.getElementById('pauseAllButton');
     const resumeAllButton = document.getElementById('resumeAllButton');
 
-    const streamsElement = document.getElementById('streams');
+    const channelsElement = document.getElementById('channels');
 
     const cssClasses = [
         {name: 'threeByThree', possibleSizes: [7, 8, 9]},
@@ -18,43 +18,43 @@ window.onload = () => {
         {name: 'oneByOne', possibleSizes: [1]}
     ]
 
-    const streamMappings = []
+    const channelMappings = []
 
-    var streams = [];
+    var channels = [];
     var removing = false;
 
-    addStreamerButton.onclick = () => addStreamer(addStreamerInput.value);
+    addChannelButton.onclick = () => addChannel(addChannelInput.value);
 
-    function addStreamer(streamer) {
+    function addChannel(channel) {
         embedId = generateUUID();
     
-        let streamElement = document.createElement('div');
-        streamElement.id = embedId;
-        streamElement.className = 'stream'
+        let channelElement = document.createElement('div');
+        channelElement.id = embedId;
+        channelElement.className = 'channel'
     
-        streamsElement.appendChild(streamElement);
+        channelsElement.appendChild(channelElement);
     
-        var stream = new Twitch.Embed(embedId, {
-            channel: streamer,
+        var channel = new Twitch.Embed(embedId, {
+            channel: channel,
             layout: 'video',
             muted: true
         });
     
-        stream.addEventListener(Twitch.Embed.VIDEO_READY, function() {
-            stream.setQuality('720p');
-            stream.setMuted(true);
+        channel.addEventListener(Twitch.Embed.VIDEO_READY, function() {
+            channel.setQuality('720p');
+            channel.setMuted(true);
         })
     
-        stream.addEventListener(Twitch.Embed.VIDEO_PLAY, function() {
-            stream.setQuality('720p');
-            stream.setMuted(true);
-            stream.removeEventListener(Twitch.Embed.VIDEO_PLAY);
+        channel.addEventListener(Twitch.Embed.VIDEO_PLAY, function() {
+            channel.setQuality('720p');
+            channel.setMuted(true);
+            channel.removeEventListener(Twitch.Embed.VIDEO_PLAY);
         })
     
-        streams.push(stream);
-        setStreamsGrid();
+        channels.push(channel);
+        setChannelsGrid();
 
-        addStreamerInput.value = '';
+        addChannelInput.value = '';
         setDisabledProperties();
     }
 
@@ -64,39 +64,39 @@ window.onload = () => {
         );
     }
 
-    function setStreamsGrid() {
+    function setChannelsGrid() {
         for(let cssClass of cssClasses) {
-            if(cssClass.possibleSizes.includes(streams.length)) {
-                streamsElement.className = cssClass.name;
+            if(cssClass.possibleSizes.includes(channels.length)) {
+                channelsElement.className = cssClass.name;
             }
         }
     }
 
-    addStreamerInput.addEventListener('input', () => {
-        addStreamerButton.disabled = addStreamerInput.value == '' || streams.length >= 9 || removing;
+    addChannelInput.addEventListener('input', () => {
+        addChannelButton.disabled = addChannelInput.value == '' || channels.length >= 9 || removing;
     })
 
     pauseAllButton.onclick = () => {
-        for(let stream of streams) {
-            stream.pause();
+        for(let channel of channels) {
+            channel.pause();
         }
     }
 
     resumeAllButton.onclick = () => {
-        for(let stream of streams) {
-            stream.play();
+        for(let channel of channels) {
+            channel.play();
         }
     }
 
-    removeStreamerButton.onclick = () => addDeleteOverlay();
+    removeChannelButton.onclick = () => addDeleteOverlay();
     removeAllButton.onclick = () => removeAll();
 
     function addDeleteOverlay() {
-        for(let stream of streamsElement.children) {
+        for(let channel of channelsElement.children) {
 
             let overlay = document.createElement('div');
             overlay.className = 'overlay';
-            overlay.onclick = () => removeStreamer(stream.id);
+            overlay.onclick = () => removeChannel(channel.id);
 
             overlay.addEventListener('mouseover', () => {
                 overlay.firstChild.innerText = 'delete_forever';
@@ -108,51 +108,49 @@ window.onload = () => {
 
             let icon = document.createElement('i');
             icon.className = 'material-icons text-shadow';
-            icon.style.fontSize = (cssClasses.findIndex(cssClass => cssClass.name == streamsElement.className) + 1) * 3 + 'vw';
+            icon.style.fontSize = (cssClasses.findIndex(cssClass => cssClass.name == channelsElement.className) + 1) * 3 + 'vw';
             icon.innerText = 'delete_outline';
             
             overlay.appendChild(icon);
-            stream.appendChild(overlay, stream.firstChild);
+            channel.appendChild(overlay, channel.firstChild);
 
-            removeStreamerButton.onclick = () => removeDeleteOverlay();
-            removeStreamerButton.innerHTML = "<i class='material-icons'>delete_outline</i>Cancel";
+            removeChannelButton.onclick = () => removeDeleteOverlay();
+            removeChannelButton.innerHTML = "<i class='material-icons'>delete_outline</i>Cancel";
             removing = true;
             setDisabledProperties();
         }
     }
 
     function removeDeleteOverlay() {
-        for(let stream of streamsElement.children) {
-            stream.removeChild(stream.lastChild)
+        for(let channel of channelsElement.children) {
+            channel.removeChild(channel.lastChild)
         }
-        removeStreamerButton.onclick = () => addDeleteOverlay();
-        removeStreamerButton.innerHTML = "<i class='material-icons'>delete_outline</i>Remove Streamer";
+        removeChannelButton.onclick = () => addDeleteOverlay();
+        removeChannelButton.innerHTML = "<i class='material-icons'>delete_outline</i>Remove Channel";
 
         removing = false;
         setDisabledProperties();
     }
 
-    function removeStreamer(id) {
-        addStreamerButton.disabled = addStreamerInput.value == '';
-
-        streams.splice(streams.findIndex(stream => stream._target == document.getElementById(id)), 1);
+    function removeChannel(id) {
+        channels.splice(channels.findIndex(channel => channel._target == document.getElementById(id)), 1);
         document.getElementById(id).remove();
 
-        setStreamsGrid();
+        setChannelsGrid();
         removeDeleteOverlay();
         setDisabledProperties();
     }
 
     function removeAll() {
-        streams = [];
-        streamsElement.replaceChildren();
+        channels = [];
+        channelsElement.replaceChildren();
         setDisabledProperties();
     }
 
     function setDisabledProperties() {
-        addStreamerButton.disabled = addStreamerInput.value == '' || streams.length >= 9 || removing;
-        removeStreamerButton.disabled = streams.length <= 0;
-        removeAllButton.disabled = streams.length <= 0 || removing;
+        addChannelButton.disabled = addChannelInput.value == '' || channels.length >= 9 || removing;
+        removeChannelButton.disabled = channels.length <= 0;
+        removeAllButton.disabled = channels.length <= 0 || removing;
     }
 
 }
