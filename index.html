@@ -15,13 +15,22 @@
 <body>
     <div id="options">
         <div id="leftButtonGroup" class="buttonGroup">
-            <input id="addChannelInput" placeholder="Channel Name">
+            <input id="addChannelInput" class="stringInput" placeholder="Channel Name">
             <button id="addChannelButton" disabled="true" class="greenButton"><i class="material-icons">add</i>Add Channel</button>
             <button id="removeChannelButton" disabled="true" class="redButton"><i class="material-icons">delete_outline</i>Remove Channel</button>
             <button id="removeAllButton" disabled="true" class="redButton"><i class="material-icons">delete_sweep</i>Remove All</button>
         </div>
         <div id="rightButtonGroup" class="buttonGroup">
             <div class="buttonGroup">
+                <div class="horizontalGroup">
+                    <i class="material-icons">volume_up</i>
+                    <input type="range" min="0" max="100" value="50" id="volumeSlider">
+                </div>
+                <div class="soundSwitchGroup">
+                    <input id="soundSwitchInput" class="stringInput numberInput" placeholder="Sound Switch Interval" type="number" min="0" step="1" onkeypress="return event.charCode >= 48" class="numberInput">
+                    <button class="greenButton" id="soundSwitchApply" disabled="true"><i class="material-icons">volume_up</i></button>
+                    <button class="redButton" id="soundSwitchClear" disabled="true"><i class="material-icons">volume_off</i></button>
+                </div>
                 <button id="pauseAllButton"><i class="material-icons">pause</i>Pause All</button>
                 <button id="resumeAllButton"><i class="material-icons">play_arrow</i>Resume All</button>
             </div>

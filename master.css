@@ -1,5 +1,6 @@
 * {
     font-family: 'Roboto', sans-serif;
+    color: white;
 }
 
 body {
@@ -26,8 +27,8 @@ body {
     row-gap: 0.5vw;
 }
 
-input, button {
-    all: unset;
+.stringInput, button, select {
+    all:unset;
     box-sizing: border-box;
     gap: 5px;
     display: flex;
@@ -140,20 +141,47 @@ button:disabled {
     background-color:rgb(50, 105, 50);
 }
 
-input {
+.stringInput {
     background-color: white;
+    color: black
 }
 
-button {
+button, select {
     background-color: rgba(0, 0, 0, 0.4);
-    color: white;
     border: solid white 1px;
 }
 
 button:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(0, 0, 0, 0.7);
 }
 
-button:active {
-    font-weight: bolder;
-}   
+.numberInput {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.soundSwitchGroup {
+    display: flex;
+}
+
+.soundSwitchGroup .greenButton {
+    border-radius: 0;
+}
+
+.soundSwitchGroup .redButton {
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+}
+
+#volumeSlider {
+    accent-color: white;
+}
+
+.horizontalGroup {
+    display: flex;
+    align-items: center;
+}
+
+.horizontalGroup i {
+    font-size: 30px;
+}
