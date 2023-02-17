@@ -39,6 +39,10 @@ body {
     border-radius: 5px;
 }
 
+button:hover {
+    cursor: pointer;
+}
+
 #options {
     display: grid;
     grid-auto-flow: column;
