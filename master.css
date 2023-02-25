@@ -1,6 +1,7 @@
 * {
     font-family: 'Roboto', sans-serif;
     color: white;
+    font-size: 0.8vw;
 }
 
 body {
@@ -186,6 +187,6 @@ button:hover {
     align-items: center;
 }
 
-.horizontalGroup i {
-    font-size: 30px;
+.buttonGroup i {
+    font-size: 1.4vw;
 }
