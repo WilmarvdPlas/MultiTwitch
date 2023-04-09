@@ -1,5 +1,7 @@
 window.onload = () => {
 
+
+    // Get all elements from the DOM.
     const addChannelButton = document.getElementById('addChannelButton');
     const removeChannelButton = document.getElementById('removeChannelButton');
     const removeAllButton = document.getElementById('removeAllButton');
@@ -15,72 +17,40 @@ window.onload = () => {
 
     const channelsElement = document.getElementById('channels');
 
+    // Define grid structures.
     const cssClasses = [
         {name: 'threeByThree', possibleSizes: [7, 8, 9]},
         {name: 'threeByTwo', possibleSizes: [5, 6]},
         {name: 'twoByTwo', possibleSizes: [3, 4]},
         {name: 'oneByTwo', possibleSizes: [2]},
         {name: 'oneByOne', possibleSizes: [1]}
-    ]
+    ];
 
-    const channelMappings = []
-
+    // Define important variables.
     var channels = [];
 
-    var removing = false;
+    var removingChannel = false;
     var soundSwitchActive = false;
     var soundSwitchIteration = 0;
 
     var soundSwitchInterval;
 
+    // Add click and event listeners to buttons and inputs.
     addChannelButton.onclick = () => addChannel(addChannelInput.value);
+    removeChannelButton.onclick = () => addDeleteOverlay();
+    removeAllButton.onclick = () => removeAll();
+    soundSwitchClear.onclick = () => clearSoundSwitch();
+    soundSwitchApply.onclick = () => applySoundSwitch();
 
-    function addChannel(channel) {
-        embedId = generateUUID();
-    
-        let channelElement = document.createElement('div');
-        channelElement.id = embedId;
-        channelElement.className = 'channel'
-    
-        channelsElement.appendChild(channelElement);
-    
-        var channel = new Twitch.Embed(embedId, {
-            channel: channel,
-            layout: 'video',
-            muted: true
-        });
-    
-        channel.addEventListener(Twitch.Embed.VIDEO_READY, function() {
-            channel.setQuality('720p');
-            channel.setMuted(true);
-            channel.setVolume(volumeSlider.value/ 100);
-        })
-    
-        channel.addEventListener(Twitch.Embed.VIDEO_PLAY, function() {
-            channel.setQuality('720p');
-            channel.setMuted(true);
-            channel.setVolume(volumeSlider.value / 100);
-            channel.removeEventListener(Twitch.Embed.VIDEO_PLAY);
-        })
-    
-        channels.push(channel);
-        setChannelsGrid();
-
-        addChannelInput.value = '';
-        setDisabledProperties();
+    pauseAllButton.onclick = () => {
+        for(let channel of channels) {
+            channel.pause();
+        }
     }
 
-    function generateUUID() {
-        return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
-          (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-        );
-    }
-
-    function setChannelsGrid() {
-        for(let cssClass of cssClasses) {
-            if(cssClass.possibleSizes.includes(channels.length)) {
-                channelsElement.className = cssClass.name;
-            }
+    resumeAllButton.onclick = () => {
+        for(let channel of channels) {
+            channel.play();
         }
     }
 
@@ -98,50 +68,120 @@ window.onload = () => {
         }
     });
 
-    pauseAllButton.onclick = () => {
-        for(let channel of channels) {
-            channel.pause();
-        }
+
+    // Define all the methods used by the click and event listeners.
+    function addChannel(channelName) {
+        const embedId = generateUUID();
+        const channelElement = createChannelsElement(embedId);
+        
+        channelsElement.appendChild(channelElement);
+    
+        const channel = createTwitchEmbed(embedId, channelName);
+    
+        addVideoReadyEventListener(channel);
+        addVideoPlayEventListener(channel);
+    
+        channels.push(channel);
+        setChannelsGrid();
+
+        addChannelInput.value = '';
+        setDisabledProperties();
     }
 
-    resumeAllButton.onclick = () => {
-        for(let channel of channels) {
-            channel.play();
-        }
+    function addVideoReadyEventListener(channel) {
+        channel.addEventListener(Twitch.Embed.VIDEO_READY, function() {
+            channel.setQuality('720p');
+            channel.setMuted(true);
+            channel.setVolume(volumeSlider.value/ 100);
+        })
     }
 
-    removeChannelButton.onclick = () => addDeleteOverlay();
-    removeAllButton.onclick = () => removeAll();
+    function addVideoPlayEventListener(channel) {
+        channel.addEventListener(Twitch.Embed.VIDEO_PLAY, function() {
+            channel.setQuality('720p');
+            channel.setMuted(true);
+            channel.setVolume(volumeSlider.value / 100);
+            channel.removeEventListener(Twitch.Embed.VIDEO_PLAY);
+        })
+    }
+
+    function createChannelsElement(embedId) {
+        let channelElement = document.createElement('div');
+        
+        channelElement.id = embedId;
+        channelElement.className = 'channel';
+
+        return channelElement;
+    }
+
+    function createTwitchEmbed(embedId, channelName) {
+        return new Twitch.Embed(embedId, {
+            channel: channelName,
+            layout: 'video',
+            muted: true
+        });
+    }
+
+    function generateUUID() {
+        return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+          (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+        );
+    }
+
+    function setChannelsGrid() {
+        for(let cssClass of cssClasses) {
+            if(cssClass.possibleSizes.includes(channels.length)) {
+                channelsElement.className = cssClass.name;
+            }
+        }
+    }
 
     function addDeleteOverlay() {
         for(let channel of channelsElement.children) {
 
-            let overlay = document.createElement('div');
-            overlay.className = 'overlay';
-            overlay.onclick = () => removeChannel(channel.id);
+            const overlay = createDeleteOverlay(channel.id);
 
-            overlay.addEventListener('mouseover', () => {
-                overlay.firstChild.innerText = 'delete_forever';
-            })
+            addHoverEffect(overlay);
 
-            overlay.addEventListener('mouseleave', () => {
-                overlay.firstChild.innerText = 'delete_outline';
-            })
-
-            let icon = document.createElement('i');
-            icon.className = 'material-icons text-shadow';
-            icon.style.fontSize = (cssClasses.findIndex(cssClass => cssClass.name == channelsElement.className) + 1) * 3 + 'vw';
-            icon.innerText = 'delete_outline';
-            icon.style.color = 'darkred';
+            const icon = createIcon();
             
             overlay.appendChild(icon);
             channel.appendChild(overlay, channel.firstChild);
-
-            removeChannelButton.onclick = () => removeDeleteOverlay();
-            removeChannelButton.innerHTML = "<i class='material-icons'>delete_outline</i>Cancel";
-            removing = true;
-            setDisabledProperties();
         }
+
+        removeChannelButton.onclick = () => removeDeleteOverlay();
+        removeChannelButton.innerHTML = "<i class='material-icons'>delete_outline</i>Cancel";
+        removingChannel = true;
+        setDisabledProperties();
+    }
+
+    function createIcon() {
+        const icon = document.createElement('i');
+        icon.className = 'material-icons text-shadow';
+        icon.style.fontSize = (cssClasses.findIndex(cssClass => cssClass.name == channelsElement.className) + 1) * 3 + 'vw';
+        icon.innerText = 'delete_outline';
+        icon.style.color = 'darkred';
+
+        return icon;
+    }
+
+    function createDeleteOverlay(channelId) {
+        const overlay = document.createElement('div');
+
+        overlay.className = 'overlay';
+        overlay.onclick = () => removeChannel(channelId);
+
+        return overlay;
+    }
+
+    function addHoverEffect(overlay) {
+        overlay.addEventListener('mouseover', () => {
+            overlay.firstChild.innerText = 'delete_forever';
+        })
+
+        overlay.addEventListener('mouseleave', () => {
+            overlay.firstChild.innerText = 'delete_outline';
+        })
     }
 
     function removeDeleteOverlay() {
@@ -151,7 +191,7 @@ window.onload = () => {
         removeChannelButton.onclick = () => addDeleteOverlay();
         removeChannelButton.innerHTML = "<i class='material-icons'>delete_outline</i>Remove Channel";
 
-        removing = false;
+        removingChannel = false;
         setDisabledProperties();
     }
 
@@ -173,10 +213,10 @@ window.onload = () => {
     }
 
     function setDisabledProperties() {
-        addChannelButton.disabled = addChannelInput.value == '' || channels.length >= 9 || removing;
+        addChannelButton.disabled = addChannelInput.value == '' || channels.length >= 9 || removingChannel;
 
         removeChannelButton.disabled = channels.length <= 0;
-        removeAllButton.disabled = channels.length <= 0 || removing;
+        removeAllButton.disabled = channels.length <= 0 || removingChannel;
 
         soundSwitchApply.disabled = soundSwitchInput.value == '' || channels.length < 2;
         soundSwitchClear.disabled = !soundSwitchActive;
@@ -188,15 +228,17 @@ window.onload = () => {
         }
     }
 
-    soundSwitchApply.onclick = () => {
-        clearInterval(soundSwitchInterval);
-
+    function resetSoundSwitchIteration() {
         for(let channel of channels) {
             channel.setMuted(true);
         }
-        soundSwitchActive = true;
-
         soundSwitchIteration = 0;
+    }
+
+    function applySoundSwitch() {
+        clearInterval(soundSwitchInterval);
+        resetSoundSwitchIteration();
+
         channels[soundSwitchIteration % channels.length].setMuted(false);
         soundSwitchIteration++;
 
@@ -206,17 +248,11 @@ window.onload = () => {
             soundSwitchIteration++;
         }, soundSwitchInput.value * 1000)
 
+        soundSwitchActive = true;
         setDisabledProperties();
     }
 
-    function resetSoundSwitchIteration() {
-        for(let channel of channels) {
-            channel.setMuted(true);
-        }
-        soundSwitchIteration = 0;
-    }
-
-    soundSwitchClear.onclick = () => {
+    function clearSoundSwitch() {
         soundSwitchActive = false
         setDisabledProperties();
 
